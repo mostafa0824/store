@@ -16,9 +16,9 @@ export default function App() {
     <>
     <Navbar/>
       <Routes>
-        <Route exact path="/" element={token?<Home />:<Auth/>} />
-        <Route path="/product" element={token?<Product />:<Auth/>} />
-        <Route path="/product-details/:id/:name" element={token?<ProductDetails />:<Auth/>} />
+        <Route exact path="/" element={<Home/>} />
+        <Route path="/product" element={<Product/>} />
+        <Route path="/product-details/:id/:name" element={<ProductDetails/>} />
         <Route
           path="/auth"
           element={token ? <Navigate to={"/"} /> : <Auth />}
