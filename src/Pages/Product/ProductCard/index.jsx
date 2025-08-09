@@ -1,8 +1,15 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { addItem, removeItem } from "../../../Store/slices/CartSlice";
 
-export default function ProductCard({ image, title, price, rating, id }) {
-  const navigate = useNavigate();
+export default function ProductCard({ image, title, price, rating, id,category }) {
+  const items={ image, title, price, id,category }
+  const cartQuantity=useSelector(state=>state.cart.items)?.find(pr=>pr.id=== +id)?.cartQuantity
+  const dispatch=useDispatch()
+  const handleClick=(e)=>{
+    e.stopPropagation()
+    dispatch(addItem(items))
+  }
   return (
     <div
       onClick={() =>
@@ -52,15 +59,27 @@ export default function ProductCard({ image, title, price, rating, id }) {
             </div>
 
             {/* Optional: Add to cart button on hover */}
-            <button
+            {cartQuantity 
+            ?(
+            <div className='flex items-center gap-3'> 
+                    <button onClick={handleClick}
+                       className="w-15 h-15 rounded-lg text-white text-2xl bg-green-500 hover:bg-green-700 transition-all cursor-pointer">
+                        +</button>
+                    <span className="mx-3 text-gray-700 text-2xl">{cartQuantity}</span>
+                    <button
+                     onClick={(e) => {
+                      e.stopPropagation();
+                      dispatch(removeItem(Number(id)));
+                      }}
+                      className="w-15 h-15 rounded-lg text-white text-2xl bg-red-500 hover:bg-red-700 transition-all cursor-pointer">
+                        -</button>
+                    </div>
+            ):(<button
               className="w-full mt-3 bg-indigo-600 text-white py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-indigo-700 cursor-pointer"
-              onClick={(e) => {
-                e.stopPropagation();
-                // Add to cart logic here
-              }}
-            >
+              onClick={handleClick}>
               Add to Cart
-            </button>
+            </button>)}
+            
           </div>
         </div>
       </div>

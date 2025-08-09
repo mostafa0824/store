@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import Notify from '../../Utils/Notify'
 import Loading from '../../components/Loding'
+import { useDispatch, useSelector } from 'react-redux'
+import { addItem, removeItem } from '../../Store/slices/CartSlice'
 
 export default function ProductDetails() {
   const { id } = useParams()
   const [product, setProduct] = useState(null)
-
+  const cartQuantity=useSelector((state)=>state.cart.items)?.find(pr=>pr.id=== +id)?.cartQuantity;
+  const dispatch=useDispatch()
+  const navigate=useNavigate()
   useEffect(() => {
     (async () => {
       try {
@@ -27,7 +31,10 @@ export default function ProductDetails() {
   }, [id])
 
   if (!product) return <Loading />
-
+  const handleClick=()=>{
+    dispatch(addItem(product))
+    navigate('/cart')
+  }
   return (
      <div className="max-w-3xl mx-auto p-6 mt-10 bg-white shadow-lg rounded-2xl text-center">
       <img
@@ -41,65 +48,25 @@ export default function ProductDetails() {
       <p className="text-sm text-gray-500 italic mb-6">Category: {product.category}</p>
 
       <div className="flex justify-center gap-4">
-        <button
+        {cartQuantity? (
+         <div className='flex items-center gap-3'> 
+        <button onClick={()=>dispatch(addItem(product))} className="w-15 h-15 rounded-lg text-white text-2xl bg-green-500 hover:bg-green-700 transition-all cursor-pointer">+</button>
+        <span className="mx-3 text-gray-700 text-2xl">{cartQuantity}</span>
+        <button onClick={()=>dispatch(removeItem(+id))} className="w-15 h-15 rounded-lg text-white text-2xl bg-red-500 hover:bg-red-700 transition-all cursor-pointer">-</button>
+        </div>
+      ):(<button
           className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl transition duration-300 cursor-pointer"
-          onClick={() => Notify('success', 'Added to cart')}
-        >
+          onClick={()=>dispatch(addItem(product))}>
           Add to Cart
         </button>
-
+        )}
+        
         <button
           className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl transition duration-300 cursor-pointer"
-          onClick={() => Notify('success', 'Buying now...')}
-        >
+          onClick={handleClick}>
           Buy Now
         </button>
       </div>
     </div>
   )
-
-// return (
-//   <div className="container mx-auto px-4 py-8 max-w-6xl">
-//     <div className="flex flex-col md:flex-row gap-8 bg-white rounded-lg shadow-lg overflow-hidden">
-//       {/* Product Image */}
-//       <div className="md:w-1/2 bg-gray-100 flex items-center justify-center p-8">
-//         <img 
-//           src={product.image} 
-//           alt={product.title} 
-//           className="max-h-96 object-contain"
-//         />
-//       </div>
-      
-//       {/* Product Details */}
-//       <div className="md:w-1/2 p-8 flex flex-col">
-//         <h1 className="text-3xl font-bold text-gray-800 mb-4">{product.title}</h1>
-        
-//         <div className="flex items-center mb-6">
-//           <span className="bg-blue-100 text-blue-800 text-sm font-semibold px-2.5 py-0.5 rounded">
-//             {product.category}
-//           </span>
-//           <div className="ml-auto flex items-center">
-//             <span className="text-yellow-400 text-2xl">★</span>
-//             <span className="ml-1 text-gray-600">
-//               {product.rating?.rate || 'N/A'} ({product.rating?.count || 0} reviews)
-//             </span>
-//           </div>
-//         </div>
-        
-//         <p className="text-gray-600 mb-6">{product.description}</p>
-        
-//         <div className="mt-auto">
-//           <p className="text-3xl font-bold text-gray-900 mb-6">
-//             ${product.price}
-//           </p>
-          
-//           <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200">
-//             Add to Cart
-//           </button>
-//         </div>
-//       </div>
-//     </div>
-//   </div>
-// );
-
 }

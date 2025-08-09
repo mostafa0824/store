@@ -1,12 +1,14 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import useFormFields from "../../../Hooks/useFormFields";
 import Notify from "../../../Utils/Notify";
-import { AuthContext } from "../../../Context/AuthContext";
 import {PulseLoader} from 'react-spinners'
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../../../Store/slices/Auth";
 
 export default function Login({handlePage}) {
   const [fields, handleChange] = useFormFields({ username: "", password: "" });
-  const { handleToken } = useContext(AuthContext);
+  const { token } = useSelector(store=>store.auth);
+  const dispatch=useDispatch()
   const [loading, setLoading] = useState(false);
   const handlesubmit = async (e) => {
     e.preventDefault();
@@ -20,13 +22,13 @@ export default function Login({handlePage}) {
         body: JSON.stringify(fields),
       });
       const data = await res.json();
-      handleToken(data.token);
+      dispatch(login(data.token));
       Notify('success','Wellcome to My Blog')
       if (!data?.token) {
         throw Error("The username or password is incorrect!");
       }
     } catch (error) {
-      Notify('error','Try again')
+      Notify('error','try agin')
     }
     setLoading(false);
   };

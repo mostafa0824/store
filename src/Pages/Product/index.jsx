@@ -31,6 +31,7 @@ export default function Product() {
     image={pr.image}
     title={pr.title}
     price={pr.price}
+    category={pr.category}
     rating={pr.rating.rate}
     />
   ))

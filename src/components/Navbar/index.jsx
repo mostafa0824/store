@@ -1,9 +1,13 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { AuthContext } from "../../Context/AuthContext";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../Store/slices/Auth";
+import { BsCart } from "react-icons/bs";
 export default function Navbar() {
   const navigate=useNavigate()
-  const { token, handleToken } = useContext(AuthContext);
+  const { token } = useSelector(store=>store.auth);
+  const cartQuantity=useSelector(state=>state.cart.items)?.length
+  const dispatch=useDispatch()
   return (
     <nav className="bg-gradient-to-r from-gray-400 to-gray-700 shadow-lg p-4 px-15 flex justify-between items-center">
   <h1 
@@ -29,7 +33,7 @@ export default function Navbar() {
     {token ? (
       <li>
         <button 
-          onClick={() => handleToken(null)} 
+          onClick={() => dispatch(logout())} 
           className="cursor-pointer bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-md transition-colors">
           Logout
         </button>
@@ -43,6 +47,13 @@ export default function Navbar() {
         </Link>
       </li>
     )}
+    <li className="relative">
+      <BsCart onClick={()=>navigate('/cart')} className=" text-white text-[32px] cursor-pointer"/>
+      {cartQuantity>0 &&(
+       <span className="absolute flex items-center justify-center w-4 h-4 top-1 left-2.5 text-white bg-red-400 rounded-full">{cartQuantity}</span>
+      )}
+      
+    </li>
   </ul>
 </nav>
   );
